@@ -1,0 +1,14 @@
+name: KookSRV
+version: '${project.version}'
+main: com.xiaoace.kooksrv.KookSRV
+api-version: 1.19
+prefix: KookSRV
+author: xiaoACE
+permissions:
+  KookSRV.JoinSilent:
+    description: 允许悄悄加入服务器
+    default: false
+
+  KookSRV.QuitSilent:
+    description: 允许悄悄离开服务器
+    default: false
