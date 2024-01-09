@@ -1,0 +1,20 @@
+kook:
+  bot-token: ""
+
+feature:
+  targetChannelID: ""
+  kook-to-minecraft:
+    enable: true
+    message-format: '<{nickName}> {message}'
+  minecraft-to-kook:
+    enable: true
+    message-format: '<{playerName}> {message}'
+    extra:
+      join: true
+      join-message-format: '{playerName}偷偷的溜进了服务器'
+      quit: true
+      quit-message-format: '肝帝{playerName}歇逼了'
+      death: true
+      death-message-format: '{playerName}去势了喵'
+      advancement: true
+
