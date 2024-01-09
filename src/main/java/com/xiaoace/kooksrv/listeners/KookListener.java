@@ -20,8 +20,8 @@ public class KookListener implements Listener {
 
     private final KookSRV plugin;
     private String targetChannelID;
-    private boolean kookToMinecraft;
 
+    private boolean kookToMinecraft;
     private String needFormatMessage;
 
     public KookListener(KookSRV plugin) {
@@ -33,7 +33,7 @@ public class KookListener implements Listener {
         kookToMinecraft = plugin.getConfig().getBoolean("feature.kook-to-minecraft.enable",true);
         targetChannelID = plugin.getConfig().getString("feature.targetChannelID");
 
-        needFormatMessage = plugin.getConfig().getString("feature.kook-to-minecraft.message-format","用户: {nickName} 说: {message}");
+        needFormatMessage = plugin.getConfig().getString("feature.kook-to-minecraft.message-format","<{nickName}> {message}");
     }
 
     @EventHandler
@@ -70,6 +70,7 @@ public class KookListener implements Listener {
             String hoverText = "点击以快速回复Kook的消息,注意: 会直接覆盖聊天栏！！！";
 
             net.md_5.bungee.api.chat.TextComponent ct = new net.md_5.bungee.api.chat.TextComponent(formattedMessage);
+
             ct.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,clickEventValue));
 
             Text text = new Text(new ComponentBuilder(hoverText).create());

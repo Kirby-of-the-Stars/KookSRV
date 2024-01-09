@@ -1,7 +1,7 @@
 package com.xiaoace.kooksrv;
 
 import com.xiaoace.kooksrv.kook.Bot;
-import com.xiaoace.kooksrv.listeners.KookListener;
+import com.xiaoace.kooksrv.listeners.MinecraftListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,6 +24,7 @@ public class KookSRV extends JavaPlugin {
 
         try {
             initBot();
+            initListener();
         } catch (Exception e) {
             Bukkit.getPluginManager().disablePlugin(this);
             throw new RuntimeException(e);
@@ -45,6 +46,10 @@ public class KookSRV extends JavaPlugin {
             return;
         }
         this.bot = new Bot(this, bot_token);
+    }
+
+    private void initListener() {
+        Bukkit.getPluginManager().registerEvents(new MinecraftListener(this),this);
     }
 
 }

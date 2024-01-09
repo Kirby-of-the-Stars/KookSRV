@@ -5,15 +5,16 @@ feature:
   targetChannelID: ""
   kook-to-minecraft:
     enable: true
-    message-format: '用户: {nickName} 说: {message}'
+    message-format: '<{nickName}> {message}'
   minecraft-to-kook:
     enable: true
-    message-format: '玩家: {playerName} 说: {message}'
+    message-format: '<{playerName}> {message}'
     extra:
       join: true
       join-message-format: '{playerName}偷偷的溜进了服务器'
       quit: true
       quit-message-format: '肝帝{playerName}歇逼了'
       death: true
-      death-message-format: '哥们还没想好'
+      death-message-format: '{playerName}去势了喵'
       advancement: true
+
