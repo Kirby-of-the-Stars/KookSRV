@@ -68,7 +68,6 @@ public class MinecraftListener implements Listener {
         } else {
             plugin.getLogger().log(Level.SEVERE, "你没有提供channel ID或channel ID不正确");
             plugin.getPluginLoader().disablePlugin(plugin);
-            return;
         }
 
     }
@@ -80,15 +79,15 @@ public class MinecraftListener implements Listener {
         if (!minecraftToKook) return;
         if (event.isCancelled()) return;
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                String finalMessage = playerMessage
-                        .replaceAll("\\{playerName}", event.getPlayer().getName())
-                        .replaceAll("\\{message}", event.getMessage());
-                textChannel.sendComponent(finalMessage);
-            }
-        }.runTaskAsynchronously(plugin);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    String finalMessage = playerMessage
+                            .replaceAll("\\{playerName}", event.getPlayer().getName())
+                            .replaceAll("\\{message}", event.getMessage());
+                    textChannel.sendComponent(finalMessage);
+                }
+            }.runTaskAsynchronously(plugin);
     }
 
     //玩家上线
@@ -96,6 +95,7 @@ public class MinecraftListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
 
         if (!onJoin) return;
+        if (event.getPlayer().hasPermission("KookSRV.JoinSilent")) return;
 
         new BukkitRunnable() {
             @Override
@@ -111,6 +111,7 @@ public class MinecraftListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
 
         if (!onQuit) return;
+        if (event.getPlayer().hasPermission("KookSRV.QuitSilent")) return;
 
         new BukkitRunnable() {
             @Override
@@ -157,13 +158,15 @@ public class MinecraftListener implements Listener {
             @Override
             public void run() {
                 AdvancementDisplay display = event.getAdvancement().getDisplay();
-                if(display == null) return;
+                if (display == null) return;
                 AdvancementDisplayType type = display.getType();
 
-                String title = event.getPlayer().getName()+ " 取得了进度 " + "["+ "(font)" + display.getTitle() + "(font)" + "[success]" +"]";
+                String title = event.getPlayer().getName() + " 取得了进度 " + "[" + "(font)" + display.getTitle() + "(font)" + "[success]" + "]";
                 switch (type) {
-                    case TASK, GOAL -> title = event.getPlayer().getName() + " 取得了进度 " + "["+ "(font)" + display.getTitle() + "(font)" + "[success]" +"]";
-                    case CHALLENGE -> title = event.getPlayer().getName()+ " 完成了挑战 " + "["+ "(font)" + display.getTitle() + "(font)" + "[purple]" +"]";
+                    case TASK, GOAL ->
+                            title = event.getPlayer().getName() + " 取得了进度 " + "[" + "(font)" + display.getTitle() + "(font)" + "[success]" + "]";
+                    case CHALLENGE ->
+                            title = event.getPlayer().getName() + " 完成了挑战 " + "[" + "(font)" + display.getTitle() + "(font)" + "[purple]" + "]";
                 }
 
                 String description = display.getDescription();
