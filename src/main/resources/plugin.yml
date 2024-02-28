@@ -12,3 +12,11 @@ permissions:
   KookSRV.QuitSilent:
     description: 允许悄悄离开服务器
     default: false
+
+commands:
+  kooksrv:
+    description: "KookSRV main command"
+    usage: |
+      /kooksrv link - Link Minecraft account with Kook account
+      /kooksrv unlink - Remove link between Minecraft and Kook account
+    
