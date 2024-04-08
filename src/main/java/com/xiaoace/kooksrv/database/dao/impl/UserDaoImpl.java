@@ -57,6 +57,7 @@ public class UserDaoImpl implements UserDao {
             user = new User(rs.getString("kookID"), rs.getString("UUID"));
         } catch (SQLException | ClassNotFoundException e) {
             plugin.getLogger().log(Level.SEVERE, "查询用户时失败" + e);
+            return null;
         } finally {
             sqliteHelper.destroyed();
         }
@@ -65,7 +66,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User selectUserByUUID(String UUID) {
-        String selectUserByUUID = "select * from User where kookID = ?";
+        String selectUserByUUID = "select * from User where UUID = ?";
         User user = null;
         try {
             PreparedStatement statement = sqliteHelper.getConnection().prepareStatement(selectUserByUUID);
@@ -74,6 +75,7 @@ public class UserDaoImpl implements UserDao {
             user = new User(rs.getString("kookID"), rs.getString("UUID"));
         } catch (SQLException | ClassNotFoundException e) {
             plugin.getLogger().log(Level.SEVERE, "查询用户时失败" + e);
+            return null;
         } finally {
             sqliteHelper.destroyed();
         }

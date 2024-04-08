@@ -1,7 +1,7 @@
 package com.xiaoace.kooksrv.listeners;
 
 import com.xiaoace.kooksrv.KookSRV;
-import net.kyori.adventure.text.Component;
+import com.xiaoace.kooksrv.database.dao.UserDao;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -23,9 +23,11 @@ public class KookListener implements Listener {
 
     private boolean kookToMinecraft;
     private String needFormatMessage;
+    UserDao userDao;
 
-    public KookListener(KookSRV plugin) {
+    public KookListener(KookSRV plugin, UserDao userDao) {
         this.plugin = plugin;
+        this.userDao = userDao;
         init();
     }
 
@@ -38,9 +40,6 @@ public class KookListener implements Listener {
 
     @EventHandler
     public void onKookTextMessage(ChannelMessageEvent event) {
-
-        System.out.println(event.getMessage().getComponent().toString());
-        System.out.println(targetChannelID);
 
         // enable?
         if (!kookToMinecraft) return;

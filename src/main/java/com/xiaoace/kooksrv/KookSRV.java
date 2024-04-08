@@ -1,10 +1,9 @@
 package com.xiaoace.kooksrv;
 
-import com.xiaoace.kooksrv.command.CommandManager;
+import com.xiaoace.kooksrv.command.MinecraftCommandManager;
 import com.xiaoace.kooksrv.database.SqliteHelper;
 import com.xiaoace.kooksrv.database.dao.UserDao;
 import com.xiaoace.kooksrv.database.dao.impl.UserDaoImpl;
-import com.xiaoace.kooksrv.database.dao.pojo.User;
 import com.xiaoace.kooksrv.kook.Bot;
 import com.xiaoace.kooksrv.listeners.MinecraftListener;
 import com.xiaoace.kooksrv.utils.CacheTools;
@@ -40,7 +39,7 @@ public class KookSRV extends JavaPlugin {
             initCacheTools();
             initBot();
             initListener();
-            getCommand("kooksrv").setExecutor(new CommandManager());
+            getCommand("kooksrv").setExecutor(new MinecraftCommandManager(cacheTools, userDao));
 
         } catch (Exception e) {
             Bukkit.getPluginManager().disablePlugin(this);
@@ -62,7 +61,7 @@ public class KookSRV extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        this.bot = new Bot(this, bot_token);
+        this.bot = new Bot(this, bot_token, cacheTools, userDao);
     }
 
     private void initListener() {

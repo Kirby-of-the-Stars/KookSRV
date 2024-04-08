@@ -1,5 +1,7 @@
 package com.xiaoace.kooksrv.command;
 
+import com.xiaoace.kooksrv.database.dao.UserDao;
+import com.xiaoace.kooksrv.utils.CacheTools;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -8,8 +10,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class CommandManager implements TabExecutor {
+public class MinecraftCommandManager implements TabExecutor {
+
+    CacheTools cacheTools;
+    UserDao userDao;
+
+    public MinecraftCommandManager(CacheTools cacheTools, UserDao userDao) {
+        this.cacheTools = cacheTools;
+        this.userDao = userDao;
+    }
+
     @Override
     public boolean onCommand(
             @NotNull CommandSender sender,
@@ -28,18 +40,30 @@ public class CommandManager implements TabExecutor {
 
             // 处理子命令: link
             if (subCommand.equalsIgnoreCase("link")) {
-                sender.sendMessage("执行子命令: link");
+                if (sender instanceof Player) {
+                    String uuid = String.valueOf(((Player) sender).getUniqueId());
+
+                    if (Objects.equals(userDao.selectUserByUUID(uuid).getUuid(), uuid)) {
+                        sender.sendMessage("您已经绑定过KOOK账号了噢");
+                        return true;
+                    } else {
+                        String code = cacheTools.createNewCache(uuid);
+                        sender.sendMessage("您的绑定码为: " + code);
+                    }
+                }
                 return true;
             }
 
-            // 处理子命令: link
+            // 处理子命令: unlink
             if (subCommand.equalsIgnoreCase("unlink")) {
-                sender.sendMessage("执行子命令: unlink");
+                if (sender instanceof Player) {
+                    String uuid = String.valueOf(((Player) sender).getUniqueId());
+                    userDao.deleteUserByUUID(uuid);
+                    sender.sendMessage("已成功解绑!");
+                }
                 return true;
             }
-
         }
-
         return false;
     }
 
