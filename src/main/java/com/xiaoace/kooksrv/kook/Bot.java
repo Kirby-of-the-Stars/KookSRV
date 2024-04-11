@@ -2,7 +2,8 @@ package com.xiaoace.kooksrv.kook;
 
 import com.xiaoace.kooksrv.KookSRV;
 import com.xiaoace.kooksrv.command.kook.LinkCommand;
-import com.xiaoace.kooksrv.database.SqliteHelper;
+import com.xiaoace.kooksrv.command.kook.ListCommand;
+import com.xiaoace.kooksrv.command.kook.RconCommand;
 import com.xiaoace.kooksrv.database.dao.UserDao;
 import com.xiaoace.kooksrv.listeners.KookListener;
 import com.xiaoace.kooksrv.utils.CacheTools;
@@ -42,7 +43,10 @@ public class Bot {
         kbcClient.getCore().getEventManager().registerHandlers(kbcClient.getInternalPlugin(), new KookListener(plugin, userDao));
         // 注册命令
         LiteKookFactory.builder(kbcClient.getInternalPlugin())
-                        .commands(new LinkCommand(kbcClient, kbcClient.getInternalPlugin(), plugin, cacheTools, userDao)).build();
+                .commands(new LinkCommand(kbcClient, kbcClient.getInternalPlugin(), plugin, cacheTools, userDao))
+                .commands(new RconCommand(kbcClient, kbcClient.getInternalPlugin(), plugin, userDao))
+                .commands(new ListCommand(kbcClient, kbcClient.getInternalPlugin()))
+                .build();
         plugin.getLogger().info("kook侧监听器注册完毕");
     }
 
