@@ -11,8 +11,11 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import java.io.File;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 public class KookSRV extends JavaPlugin {
@@ -40,6 +43,12 @@ public class KookSRV extends JavaPlugin {
             initBot();
             initListener();
             getCommand("kooksrv").setExecutor(new MinecraftCommandManager(cacheTools, userDao));
+
+            // 创建缓存文件夹
+            File cacheFolder = new File(getDataFolder(), "cache");
+            if (!cacheFolder.exists()) {
+                cacheFolder.mkdir();
+            }
 
         } catch (Exception e) {
             Bukkit.getPluginManager().disablePlugin(this);
