@@ -166,10 +166,6 @@ public class KookListener implements Listener {
                 Audience audience = plugin.adventure().all();
                 audience.sendMessage(textcomponent);
 
-//                for (Player player : plugin.getServer().getOnlinePlayers()) {
-//                    player.getInventory().addItem(map);
-//                }
-
             } catch (IOException e) {
                 plugin.getLogger().log(Level.WARNING, "Error downloading and caching image: " + e.getMessage());
             } finally {
