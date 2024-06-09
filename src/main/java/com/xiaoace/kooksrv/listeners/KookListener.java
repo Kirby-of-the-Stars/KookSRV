@@ -6,13 +6,11 @@ import cn.hutool.http.HttpUtil;
 import com.xiaoace.kooksrv.KookSRV;
 import com.xiaoace.kooksrv.database.dao.UserDao;
 import com.xiaoace.kooksrv.utils.ImageMapRender;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
@@ -89,19 +87,12 @@ public class KookListener implements Listener {
 
                 String clickEventValue = String.format("(met)%s(met)", senderId);
 
-                String hoverText = "点击以快速回复Kook的消息,注意: 会直接覆盖聊天栏！！！";
+                net.kyori.adventure.text.TextComponent textcomponent = Component.text()
+                        .append(Component.text(formattedMessage).hoverEvent(Component.text("点击@该KOOK用户")).clickEvent(ClickEvent.suggestCommand(clickEventValue)))
+                        .build();
 
-                net.md_5.bungee.api.chat.TextComponent ct = new net.md_5.bungee.api.chat.TextComponent(formattedMessage);
-
-                ct.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, clickEventValue));
-
-                Text text = new Text(new ComponentBuilder(hoverText).create());
-
-                HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
-
-                ct.setHoverEvent(hoverEvent);
-
-                Bukkit.spigot().broadcast(ct);
+                Audience audience = plugin.adventure().all();
+                audience.sendMessage(textcomponent);
 
             }
 
@@ -118,13 +109,10 @@ public class KookListener implements Listener {
 
                         BukkitScheduler scheduler = getServer().getScheduler();
                         scheduler.runTask(plugin, () -> makeMap(imageUrl, senderNickname));
-                        return;
                     }
                 }
             }
 
-        } else {
-            return;
         }
     }
 
@@ -132,9 +120,12 @@ public class KookListener implements Listener {
 
         String lowercaseUrl = url.toLowerCase();
         if (lowercaseUrl.endsWith(".webp")) {
-            net.md_5.bungee.api.chat.TextComponent ct = new net.md_5.bungee.api.chat.TextComponent("<" + senderNickName + ">" + " [" + url + "]");
-            ct.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-            Bukkit.spigot().broadcast(ct);
+            net.kyori.adventure.text.TextComponent textcomponent = Component.text()
+                    .append(Component.text("<" + senderNickName + ">" + " [图片] ")
+                            .hoverEvent(Component.text("点击打开链接"))
+                            .clickEvent(ClickEvent.openUrl(url))).build();
+            Audience audience = plugin.adventure().all();
+            audience.sendMessage(textcomponent);
         } else {
 
             File cacheFolder = new File(plugin.getDataFolder(), "images");
@@ -166,14 +157,18 @@ public class KookListener implements Listener {
                 mapMeta.setDisplayName(String.valueOf(view.getId()));
                 map.setItemMeta(mapMeta);
 
-                net.md_5.bungee.api.chat.TextComponent ct = new net.md_5.bungee.api.chat.TextComponent("<" + senderNickName + ">" + " [" + url + "]");
-                ct.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+                net.kyori.adventure.text.TextComponent textcomponent = Component.text()
+                        .append(Component.text("<" + senderNickName + ">" + " [图片] ")
+                                .hoverEvent(Component.text("点击打开链接"))
+                                .clickEvent(ClickEvent.openUrl(url)))
+                        .append(Component.text("[点击获取地图]").clickEvent(ClickEvent.runCommand("/kooksrv getMap " + view.getId()))).build();
 
-                Bukkit.spigot().broadcast(ct);
+                Audience audience = plugin.adventure().all();
+                audience.sendMessage(textcomponent);
 
-                for (Player player : plugin.getServer().getOnlinePlayers()) {
-                    player.getInventory().addItem(map);
-                }
+//                for (Player player : plugin.getServer().getOnlinePlayers()) {
+//                    player.getInventory().addItem(map);
+//                }
 
             } catch (IOException e) {
                 plugin.getLogger().log(Level.WARNING, "Error downloading and caching image: " + e.getMessage());

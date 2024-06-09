@@ -16,7 +16,5 @@ permissions:
 commands:
   kooksrv:
     description: "KookSRV main command"
-    usage: |
-      /kooksrv link - Link Minecraft account with Kook account
-      /kooksrv unlink - Remove link between Minecraft and Kook account
-    
+
+

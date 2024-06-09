@@ -9,6 +9,7 @@ import com.xiaoace.kooksrv.listeners.ImageManager;
 import com.xiaoace.kooksrv.listeners.MinecraftListener;
 import com.xiaoace.kooksrv.utils.CacheTools;
 import lombok.Getter;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,6 +27,15 @@ public class KookSRV extends JavaPlugin {
     private CacheTools cacheTools;
     private UserDao userDao;
 
+    private BukkitAudiences adventure;
+
+    public BukkitAudiences adventure() {
+        if (this.adventure == null) {
+            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
+        }
+        return this.adventure;
+    }
+
     @Override
     public void onLoad() {
         saveDefaultConfig();
@@ -41,6 +51,8 @@ public class KookSRV extends JavaPlugin {
             initBot();
             initListener();
             getCommand("kooksrv").setExecutor(new MinecraftCommandManager(cacheTools, userDao));
+
+            this.adventure = BukkitAudiences.create(this);
 
             // 创建图片存储文件夹
             File cacheFolder = new File(getDataFolder(), "images");
@@ -59,6 +71,10 @@ public class KookSRV extends JavaPlugin {
     public void onDisable() {
         // KOOK机器人关闭
         this.bot.getKbcClient().shutdown();
+        if (this.adventure != null) {
+            this.adventure.close();
+            this.adventure = null;
+        }
     }
 
     private void initBot() {

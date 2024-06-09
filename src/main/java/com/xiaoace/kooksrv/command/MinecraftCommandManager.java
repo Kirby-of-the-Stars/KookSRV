@@ -2,10 +2,13 @@ package com.xiaoace.kooksrv.command;
 
 import com.xiaoace.kooksrv.database.dao.UserDao;
 import com.xiaoace.kooksrv.utils.CacheTools;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.MapMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -63,6 +66,21 @@ public class MinecraftCommandManager implements TabExecutor {
                 }
                 return true;
             }
+
+            // 处理子命令: getMap
+            if (subCommand.equalsIgnoreCase("getMap")) {
+                if (sender instanceof Player player) {
+                    ItemStack map = new ItemStack(Material.FILLED_MAP, 1);
+                    MapMeta mapMeta = (MapMeta) map.getItemMeta();
+                    mapMeta.setMapId(Integer.parseInt(args[1]));
+                    map.setItemMeta(mapMeta);
+
+                    if (!player.getInventory().addItem(map).isEmpty()) {
+                        player.getWorld().dropItem(player.getLocation(), map);
+                    }
+                }
+            }
+
         }
         return false;
     }
@@ -83,6 +101,7 @@ public class MinecraftCommandManager implements TabExecutor {
                 List<String> subCommands = new ArrayList<>();
                 subCommands.add("link");
                 subCommands.add("unlink");
+                subCommands.add("getMap");
                 return subCommands;
             }
         }
