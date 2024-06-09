@@ -79,15 +79,15 @@ public class MinecraftListener implements Listener {
         if (!minecraftToKook) return;
         if (event.isCancelled()) return;
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    String finalMessage = playerMessage
-                            .replaceAll("\\{playerName}", event.getPlayer().getName())
-                            .replaceAll("\\{message}", event.getMessage());
-                    textChannel.sendComponent(finalMessage);
-                }
-            }.runTaskAsynchronously(plugin);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                String finalMessage = playerMessage
+                        .replaceAll("\\{playerName}", event.getPlayer().getName())
+                        .replaceAll("\\{message}", event.getMessage());
+                textChannel.sendComponent(finalMessage);
+            }
+        }.runTaskAsynchronously(plugin);
     }
 
     //玩家上线

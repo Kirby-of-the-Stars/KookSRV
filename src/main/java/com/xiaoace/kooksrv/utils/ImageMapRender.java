@@ -11,19 +11,22 @@ import java.awt.image.BufferedImage;
 public class ImageMapRender extends MapRenderer {
 
     private BufferedImage image;
+    private boolean flag;
 
     public ImageMapRender(BufferedImage image) {
-
         this.image = image;
-
     }
 
     @Override
     public void render(@NotNull MapView map, @NotNull MapCanvas canvas, @NotNull Player player) {
 
-        map.setScale(MapView.Scale.FARTHEST);
-        map.setLocked(true);
+        if (flag) {
+            return;
+        }
         canvas.drawImage(0, 0, image);
-
+        map.setScale(MapView.Scale.FARTHEST);
+        map.setTrackingPosition(false);
+        map.setLocked(true);
+        flag = true;
     }
 }

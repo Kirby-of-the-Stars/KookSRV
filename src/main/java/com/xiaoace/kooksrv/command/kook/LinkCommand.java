@@ -42,7 +42,7 @@ public class LinkCommand {
             mcPlugin.getLogger().info(((User) sender).getName() + "使用了命令: " + message.getComponent().toString());
 
             String kookUserID = ((User) sender).getId();
-            String uuid = cacheTools.codeCache.get(code,false);
+            String uuid = cacheTools.codeCache.get(code, false);
 
             if (uuid != null) {
 

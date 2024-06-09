@@ -1,31 +1,22 @@
 package com.xiaoace.kooksrv.listeners;
 
-import cn.hutool.core.img.Img;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpUtil;
 import com.xiaoace.kooksrv.KookSRV;
 import com.xiaoace.kooksrv.database.dao.UserDao;
 import com.xiaoace.kooksrv.utils.ImageMapRender;
-import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.NBTCompound;
-import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.hover.content.Text;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
-import org.bukkit.map.MapCanvas;
-import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.jetbrains.annotations.NotNull;
 import snw.jkook.entity.User;
 import snw.jkook.entity.channel.TextChannel;
 import snw.jkook.event.EventHandler;
@@ -38,7 +29,6 @@ import snw.jkook.message.component.card.module.BaseModule;
 import snw.jkook.message.component.card.module.ContainerModule;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -142,53 +132,55 @@ public class KookListener implements Listener {
 
         String lowercaseUrl = url.toLowerCase();
         if (lowercaseUrl.endsWith(".webp")) {
-            net.md_5.bungee.api.chat.TextComponent ct = new net.md_5.bungee.api.chat.TextComponent(senderNickName +" [" + url + "]");
+            net.md_5.bungee.api.chat.TextComponent ct = new net.md_5.bungee.api.chat.TextComponent("<" + senderNickName + ">" + " [" + url + "]");
             ct.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
             Bukkit.spigot().broadcast(ct);
         } else {
-            File cacheFolder = new File(plugin.getDataFolder(), "cache");
-            String name = RandomUtil.randomString(16);
-            File imageFile1 = new File(cacheFolder, name + ".png");
-            File imageFile2 = new File(cacheFolder, name + "2.png");
+
+            File cacheFolder = new File(plugin.getDataFolder(), "images");
+
+            // 从KOOK下载图片
+            String randomName = RandomUtil.randomString(16);
+            File imageFile1 = new File(cacheFolder, randomName + ".png");
             HttpUtil.downloadFileFromUrl(url, imageFile1);
 
-            ImgUtil.scale(imageFile1, imageFile2, 128, 128, null);
-
             ItemStack map = new ItemStack(Material.FILLED_MAP, 1);
-            ItemMeta itemMeta = map.getItemMeta();
+            MapMeta mapMeta = (MapMeta) map.getItemMeta();
 
-            if (itemMeta instanceof MapMeta) {
-                MapMeta mapMeta = (MapMeta) map.getItemMeta();
-                try {
-                    BufferedImage image = ImageIO.read(imageFile2);
+            try {
+                // 创建地图
+                MapView view = Bukkit.createMap(plugin.getServer().getWorlds().get(0));
 
-                    // 创建地图
-                    MapView view = Bukkit.createMap(plugin.getServer().getWorlds().get(0));
-                    // 清空渲染器
-                    view.getRenderers().clear();
-                    // 添加自己的渲染器
-                    view.addRenderer(new ImageMapRender(image));
+                // 缩放并存储图片
+                File imageFile2 = new File(cacheFolder, view.getId() + ".png");
+                ImgUtil.scale(imageFile1, imageFile2, 128, 128, null);
 
-                    mapMeta.setMapView(view);
-                    mapMeta.setDisplayName(name);
-                    map.setItemMeta(mapMeta);
+                // 清空渲染器
+                view.getRenderers().clear();
 
-                    net.md_5.bungee.api.chat.TextComponent ct = new net.md_5.bungee.api.chat.TextComponent(senderNickName + " [" + url + "]");
-                    ct.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+                // 添加自己的渲染器
+                BufferedImage image = ImageIO.read(imageFile2);
+                view.addRenderer(new ImageMapRender(image));
 
-                    Bukkit.spigot().broadcast(ct);
+                mapMeta.setMapView(view);
+                mapMeta.setDisplayName(String.valueOf(view.getId()));
+                map.setItemMeta(mapMeta);
 
-                    for (Player player : plugin.getServer().getOnlinePlayers()) {
-                        player.getInventory().addItem(map);
-                    }
+                net.md_5.bungee.api.chat.TextComponent ct = new net.md_5.bungee.api.chat.TextComponent("<" + senderNickName + ">" + " [" + url + "]");
+                ct.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
 
-                } catch (IOException e) {
-                    plugin.getLogger().log(Level.WARNING, "Error downloading and caching image: " + e.getMessage());
-                } finally {
-                    imageFile1.delete();
-                    imageFile2.delete();
+                Bukkit.spigot().broadcast(ct);
+
+                for (Player player : plugin.getServer().getOnlinePlayers()) {
+                    player.getInventory().addItem(map);
                 }
+
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.WARNING, "Error downloading and caching image: " + e.getMessage());
+            } finally {
+                imageFile1.delete();
             }
+
         }
 
     }
