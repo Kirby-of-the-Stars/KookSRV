@@ -119,7 +119,8 @@ public class KookListener implements Listener {
     public void makeMap(String url, String senderNickName) {
 
         String lowercaseUrl = url.toLowerCase();
-        if (lowercaseUrl.endsWith(".webp")) {
+        //预留给某个还不支持的图片类型
+        if (lowercaseUrl.endsWith(".unknown")) {
             net.kyori.adventure.text.TextComponent textcomponent = Component.text()
                     .append(Component.text("<" + senderNickName + ">" + " [图片] ")
                             .hoverEvent(Component.text("点击打开链接"))
