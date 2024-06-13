@@ -85,7 +85,7 @@ public class ImageManager implements Listener {
                 }
             }
         } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Error downloading and caching image: " + e.getMessage());
+            plugin.getLogger().log(Level.WARNING, "ImageMapRenderer: Could not find images folder");
         }
         return null;
     }
