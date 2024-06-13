@@ -1,7 +1,7 @@
 package com.xiaoace.kooksrv.listeners;
 
 import cn.hutool.core.img.ImgUtil;
-import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.http.HttpUtil;
 import com.xiaoace.kooksrv.KookSRV;
 import com.xiaoace.kooksrv.database.dao.UserDao;
@@ -117,64 +117,71 @@ public class KookListener implements Listener {
     }
 
     public void makeMap(String url, String senderNickName) {
-
-        String lowercaseUrl = url.toLowerCase();
-        //预留给某个还不支持的图片类型
-        if (lowercaseUrl.endsWith(".unknown")) {
-            net.kyori.adventure.text.TextComponent textcomponent = Component.text()
-                    .append(Component.text("<" + senderNickName + ">" + " [图片] ")
-                            .hoverEvent(Component.text("点击打开链接"))
-                            .clickEvent(ClickEvent.openUrl(url))).build();
-            Audience audience = plugin.adventure().all();
-            audience.sendMessage(textcomponent);
-        } else {
-
+        File resultFile = null;
+        try {
             File cacheFolder = new File(plugin.getDataFolder(), "images");
-
             // 从KOOK下载图片
-            String randomName = RandomUtil.randomString(16);
-            File imageFile1 = new File(cacheFolder, randomName + ".png");
-            HttpUtil.downloadFileFromUrl(url, imageFile1);
-
+            resultFile = HttpUtil.downloadFileFromUrl(url, cacheFolder);
+            String MIMETYPE = FileUtil.getMimeType(resultFile.getName());
+            String suffix = "." + FileUtil.getSuffix(resultFile);
+            //如果ImageIO没有其对应的处理器，则仅发送链接
+            if (!ImageIO.getImageReadersByMIMEType(MIMETYPE).hasNext()) {
+                sendExternalLink(url, senderNickName);
+                return;
+            }
             ItemStack map = new ItemStack(Material.FILLED_MAP, 1);
             MapMeta mapMeta = (MapMeta) map.getItemMeta();
 
-            try {
-                // 创建地图
-                MapView view = Bukkit.createMap(plugin.getServer().getWorlds().get(0));
+            // 创建地图
+            MapView view = Bukkit.createMap(plugin.getServer().getWorlds().get(0));
 
-                // 缩放并存储图片
-                File imageFile2 = new File(cacheFolder, view.getId() + ".png");
-                ImgUtil.scale(imageFile1, imageFile2, 128, 128, null);
+            // 缩放并存储图片
+            File imageFile2 = new File(cacheFolder, view.getId() + suffix);
+            ImgUtil.scale(resultFile, imageFile2, 128, 128, null);
+            // 清空渲染器
+            view.getRenderers().clear();
 
-                // 清空渲染器
-                view.getRenderers().clear();
+            // 添加自己的渲染器
+            BufferedImage image = ImageIO.read(imageFile2);
+            view.addRenderer(new ImageMapRender(image));
 
-                // 添加自己的渲染器
-                BufferedImage image = ImageIO.read(imageFile2);
-                view.addRenderer(new ImageMapRender(image));
+            mapMeta.setMapView(view);
+            mapMeta.setDisplayName(String.valueOf(view.getId()));
+            map.setItemMeta(mapMeta);
 
-                mapMeta.setMapView(view);
-                mapMeta.setDisplayName(String.valueOf(view.getId()));
-                map.setItemMeta(mapMeta);
+            net.kyori.adventure.text.TextComponent textcomponent = Component.text()
+                    .append(Component.text("<" + senderNickName + ">" + " [图片] ")
+                            .hoverEvent(Component.text("点击打开链接"))
+                            .clickEvent(ClickEvent.openUrl(url)))
+                    .append(Component.text("[点击获取地图]").clickEvent(ClickEvent.runCommand("/kooksrv getMap " + view.getId()))).build();
 
-                net.kyori.adventure.text.TextComponent textcomponent = Component.text()
-                        .append(Component.text("<" + senderNickName + ">" + " [图片] ")
-                                .hoverEvent(Component.text("点击打开链接"))
-                                .clickEvent(ClickEvent.openUrl(url)))
-                        .append(Component.text("[点击获取地图]").clickEvent(ClickEvent.runCommand("/kooksrv getMap " + view.getId()))).build();
+            Audience audience = plugin.adventure().all();
+            audience.sendMessage(textcomponent);
 
-                Audience audience = plugin.adventure().all();
-                audience.sendMessage(textcomponent);
-
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, "Error downloading and caching image: " + e.getMessage());
-            } finally {
-                imageFile1.delete();
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Error downloading and caching image: " + e.getMessage());
+        } finally {
+            if (resultFile != null && resultFile.exists()) {
+                resultFile.delete();
             }
-
         }
 
+    }
+
+    /**
+     * 发送图片链接
+     *
+     * @param url            源url
+     * @param senderNickName 发送者名称
+     * @author DAY
+     */
+    private void sendExternalLink(String url, String senderNickName) {
+        net.kyori.adventure.text.TextComponent textcomponent = Component.text()
+                .append(Component.text("<" + senderNickName + ">" + " [图片] ")
+                        .hoverEvent(Component.text("点击打开链接"))
+                        .clickEvent(ClickEvent.openUrl(url))).build();
+        Audience audience = plugin.adventure().all();
+        audience.sendMessage(textcomponent);
     }
 
 }

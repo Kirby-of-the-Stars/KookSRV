@@ -1,5 +1,6 @@
 package com.xiaoace.kooksrv.listeners;
 
+import cn.hutool.core.io.FileUtil;
 import com.xiaoace.kooksrv.KookSRV;
 import com.xiaoace.kooksrv.utils.ImageMapRender;
 import org.bukkit.Bukkit;
@@ -12,8 +13,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.logging.Level;
 
 public class ImageManager implements Listener {
 
@@ -36,25 +41,22 @@ public class ImageManager implements Listener {
 
     @EventHandler
     public void onMapInitEvent(MapInitializeEvent event) {
-
         if (managedMapIds.contains(event.getMap().getId())) {
             MapView view = event.getMap();
             view.getRenderers().clear();
-
-            File imageFile = new File(imageFolder, view.getId() + ".png");
+            File imageFile = findFile(String.valueOf(view.getId()), imageFolder);
             try {
+                if(imageFile==null) return;
                 BufferedImage image = ImageIO.read(imageFile);
                 view.addRenderer(new ImageMapRender(image));
                 view.setScale(MapView.Scale.FARTHEST);
                 view.setTrackingPosition(false);
-
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
     }
-
     public void init() {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         loadImages();
@@ -63,10 +65,28 @@ public class ImageManager implements Listener {
     private void loadImages() {
         if (imageFolder.exists() && imageFolder.isDirectory()) {
             for (String fileName : Objects.requireNonNull(imageFolder.list())) {
-                managedMapIds.add(Integer.parseInt(fileName.replace(".png", "")));
+                try{
+                    managedMapIds.add(Integer.parseInt(FileUtil.getPrefix(fileName)));
+                }catch (NumberFormatException e) {
+                    plugin.getLogger().log(Level.WARNING,"Reading Not Map id Image :"+fileName);
+                }
+
             }
         } else {
             Bukkit.getConsoleSender().sendMessage("ImageMapRenderer: Could not find images folder");
         }
+    }
+
+    private File findFile(String mainName, File folder) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder.toPath(), mainName + ".*")) {
+            for (Path path : stream) {
+                if (Files.isRegularFile(path)) {
+                    return path.toFile();
+                }
+            }
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Error downloading and caching image: " + e.getMessage());
+        }
+        return null;
     }
 }
