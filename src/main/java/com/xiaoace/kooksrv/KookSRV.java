@@ -67,10 +67,6 @@ public class KookSRV extends JavaPlugin {
             if (!cacheFolder.exists()) {
                 cacheFolder.mkdir();
             }
-
-            //init webp lib
-//            WebP.loadNativeLibrary();
-//            System.load(new File("D:\\DEV\\Windows\\x86_64\\webp-imageio.dll").getAbsolutePath());
         } catch (Exception e) {
             Bukkit.getPluginManager().disablePlugin(this);
             throw new RuntimeException(e);
