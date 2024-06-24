@@ -26,7 +26,7 @@ public class ImageMapRender extends MapRenderer {
         canvas.drawImage(0, 0, image);
         map.setScale(MapView.Scale.FARTHEST);
         map.setTrackingPosition(false);
-        //map.setLocked(true);
+        map.setLocked(true);
         flag = true;
     }
 }
