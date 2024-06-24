@@ -69,6 +69,7 @@ public class MinecraftCommandManager implements TabExecutor {
 
             // 处理子命令: getMap
             if (subCommand.equalsIgnoreCase("getMap")) {
+
                 if (sender instanceof Player player) {
                     ItemStack map = new ItemStack(Material.FILLED_MAP, 1);
                     MapMeta mapMeta = (MapMeta) map.getItemMeta();

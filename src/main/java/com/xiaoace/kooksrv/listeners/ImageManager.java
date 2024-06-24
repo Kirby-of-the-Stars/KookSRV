@@ -46,7 +46,7 @@ public class ImageManager implements Listener {
             view.getRenderers().clear();
             File imageFile = findFile(String.valueOf(view.getId()), imageFolder);
             try {
-                if(imageFile==null) return;
+                if (imageFile == null) return;
                 BufferedImage image = ImageIO.read(imageFile);
                 view.addRenderer(new ImageMapRender(image));
                 view.setScale(MapView.Scale.FARTHEST);
@@ -57,6 +57,7 @@ public class ImageManager implements Listener {
         }
 
     }
+
     public void init() {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         loadImages();
@@ -65,10 +66,10 @@ public class ImageManager implements Listener {
     private void loadImages() {
         if (imageFolder.exists() && imageFolder.isDirectory()) {
             for (String fileName : Objects.requireNonNull(imageFolder.list())) {
-                try{
+                try {
                     managedMapIds.add(Integer.parseInt(FileUtil.getPrefix(fileName)));
-                }catch (NumberFormatException e) {
-                    plugin.getLogger().log(Level.WARNING,"Reading Not Map id Image :"+fileName);
+                } catch (NumberFormatException e) {
+                    plugin.getLogger().log(Level.WARNING, "Reading Not Map id Image :" + fileName);
                 }
 
             }

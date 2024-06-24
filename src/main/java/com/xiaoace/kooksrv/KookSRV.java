@@ -27,6 +27,7 @@ public class KookSRV extends JavaPlugin {
         Thread.currentThread().setContextClassLoader(KookSRV.class.getClassLoader());
         ImageIO.scanForPlugins();
     }
+
     @Getter
     private Bot bot;
     @Getter

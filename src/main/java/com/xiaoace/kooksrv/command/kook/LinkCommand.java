@@ -44,9 +44,7 @@ public class LinkCommand {
             String kookUserID = ((User) sender).getId();
             String uuid = cacheTools.codeCache.get(code, false);
 
-            if (uuid != null) {
-
-            } else {
+            if (uuid == null) {
                 message.reply("绑定码不存在");
                 return;
             }

@@ -161,13 +161,14 @@ public class MinecraftListener implements Listener {
                 if (display == null) return;
                 AdvancementDisplayType type = display.getType();
 
-                String title = event.getPlayer().getName() + " 取得了进度 " + "[" + "(font)" + display.getTitle() + "(font)" + "[success]" + "]";
-                switch (type) {
+                event.getPlayer().getName();
+                display.getTitle();
+                String title = switch (type) {
                     case TASK, GOAL ->
-                            title = event.getPlayer().getName() + " 取得了进度 " + "[" + "(font)" + display.getTitle() + "(font)" + "[success]" + "]";
+                            event.getPlayer().getName() + " 取得了进度 " + "[" + "(font)" + display.getTitle() + "(font)" + "[success]" + "]";
                     case CHALLENGE ->
-                            title = event.getPlayer().getName() + " 完成了挑战 " + "[" + "(font)" + display.getTitle() + "(font)" + "[purple]" + "]";
-                }
+                            event.getPlayer().getName() + " 完成了挑战 " + "[" + "(font)" + display.getTitle() + "(font)" + "[purple]" + "]";
+                };
 
                 String description = display.getDescription();
 

@@ -76,8 +76,7 @@ public class KookListener implements Listener {
         String senderNickname = sender.getNickName(channel.getGuild());
 
         // really a text message?
-        if ((event.getMessage().getComponent() instanceof TextComponent textComponent)) {
-
+        if (event.getMessage().getComponent() instanceof TextComponent textComponent) {
             String message = textComponent.toString();
 
             String formattedMessage = needFormatMessage.replaceAll("\\{nickName}", senderNickname)
@@ -96,8 +95,7 @@ public class KookListener implements Listener {
 
             }
 
-        } else if ((event.getMessage().getComponent() instanceof CardComponent cardComponent)) {
-
+        } else if (event.getMessage().getComponent() instanceof CardComponent cardComponent) {
             List<BaseModule> baseModuleList = cardComponent.getModules();
 
             // 仅通过单张图片

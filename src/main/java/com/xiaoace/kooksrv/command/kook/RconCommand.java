@@ -54,7 +54,6 @@ public class RconCommand {
                             if (mcPlugin.getServer().dispatchCommand(mcPlugin.getServer().getConsoleSender(), command)) {
                                 message.reply("命令执行成功！");
                                 mcPlugin.getLogger().info(((User) sender).getName() + "成功使用了命令: " + message.getComponent().toString());
-                                return;
                             } else {
                                 message.reply("命令执行失败！");
                                 mcPlugin.getLogger().info(((User) sender).getName() + "使用命令失败: " + message.getComponent().toString());
@@ -84,7 +83,6 @@ public class RconCommand {
 
                                 if (message instanceof TextChannelMessage) {
                                     ((TextChannelMessage) message).replyTemp("你不是OP,你不能离线执行命令噢");
-                                    return;
                                 } else {
                                     message.reply("你不是OP,你不能离线执行命令噢");
                                 }
